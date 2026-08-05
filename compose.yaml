@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: project-tracking-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-projecttracking}
+      POSTGRES_USER: ${POSTGRES_USER:-projecttracking}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-projecttracking}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${POSTGRES_USER:-projecttracking} -d ${POSTGRES_DB:-projecttracking}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: project-tracking-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./project-tracking-manager/backend
+    container_name: project-tracking-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-projecttracking}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-projecttracking}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-projecttracking}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL:-false}
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: 1025
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-no-reply@projecttracking.local}
+      APP_FRONTEND_ACTIVATION_URL: ${FRONTEND_PUBLIC_URL:-http://localhost:3000}/activate
+      APP_FRONTEND_PASSWORD_RESET_URL: ${FRONTEND_PUBLIC_URL:-http://localhost:3000}/reset-password
+      APP_FRONTEND_ALLOWED_ORIGINS: ${FRONTEND_PUBLIC_URL:-http://localhost:3000}
+      APP_SAMPLE_DATA_ENABLED: ${APP_SAMPLE_DATA_ENABLED:-true}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./project-tracking-frontend
+      args:
+        VITE_API_BASE_URL: ""
+    container_name: project-tracking-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

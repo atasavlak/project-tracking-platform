@@ -1,0 +1,25 @@
+# Ortam değişkenleri
+.env
+**/.env
+
+# Java / Maven
+**/target/
+*.class
+*.jar
+
+# Node / Vite
+**/node_modules/
+**/dist/
+
+# IDE
+**/.idea/
+*.iml
+.vscode/
+
+# İşletim sistemi
+.DS_Store
+Thumbs.db
+
+# Loglar
+*.log
+logs/
