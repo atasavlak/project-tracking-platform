@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-projecttracking}
       POSTGRES_USER: ${POSTGRES_USER:-projecttracking}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-projecttracking}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     ports:
       - "5432:5432"
     volumes:
@@ -34,7 +34,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-projecttracking}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-projecttracking}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-projecttracking}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
       SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL:-false}
       SPRING_MAIL_HOST: mailpit

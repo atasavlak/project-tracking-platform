@@ -161,7 +161,7 @@ Geliştirme ortamı için örnek `.env` içeriği:
 ```env
 POSTGRES_DB=projecttracking
 POSTGRES_USER=projecttracking
-POSTGRES_PASSWORD=projecttracking
+POSTGRES_PASSWORD=CHANGE_ME
 
 FRONTEND_PUBLIC_URL=http://localhost:3000
 APP_MAIL_FROM=no-reply@projecttracking.local
