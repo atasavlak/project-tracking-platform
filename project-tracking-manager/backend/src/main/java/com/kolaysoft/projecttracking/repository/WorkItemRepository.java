@@ -135,7 +135,7 @@ public interface WorkItemRepository
                     :responsiblePerson IS NULL
                     OR LOWER(wi.responsiblePerson)
                        LIKE CONCAT(
-                            CONCAT('%', LOWER(:responsiblePerson)),
+                            CONCAT('%', LOWER(CAST(:responsiblePerson AS String))),
                             '%'
                        )
               )
